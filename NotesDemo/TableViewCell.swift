@@ -13,6 +13,7 @@ class TableViewCell: UITableViewCell {
     var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Title"
+        label.numberOfLines = 0 
         label.toAutoLayout()
         return label
     }()
@@ -20,6 +21,7 @@ class TableViewCell: UITableViewCell {
     var dateLabel: UILabel = {
         let label = UILabel()
         label.text = "Date"
+        label.numberOfLines = 0
         label.toAutoLayout()
         return label
     }()
@@ -38,14 +40,14 @@ class TableViewCell: UITableViewCell {
     private func setupViews() {
         addSubviews(titleLabel, dateLabel)
         let constraints = [
-            titleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
-            titleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 5),
-            titleLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -5),
-            titleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -50),
+            titleLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
+            titleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 5),
+            titleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5),
+            titleLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -50),
             
-            dateLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 10),
+            dateLabel.topAnchor.constraint(equalTo: self.bottomAnchor, constant: -40),
             dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            dateLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5)
+            dateLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10)
 
         ]
         NSLayoutConstraint.activate(constraints)

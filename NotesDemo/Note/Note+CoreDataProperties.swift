@@ -18,7 +18,12 @@ extension Note {
 
     @NSManaged public var title: String?
     @NSManaged public var desc: String?
+    @NSManaged public var id: UUID
+    @NSManaged public var date: Date
+    @NSManaged public var image: Data?
 
+
+    
 }
 
 extension Note : Identifiable {

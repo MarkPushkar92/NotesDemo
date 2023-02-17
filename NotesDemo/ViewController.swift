@@ -40,7 +40,6 @@ class ViewController: UIViewController {
         ViewController.noteList = coreDataStack.fetchTasks()
     }
     
-    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         ViewController.noteList = coreDataStack.fetchTasks()
@@ -65,6 +64,8 @@ extension ViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as! TableViewCell
         cell.titleLabel.text = ViewController.noteList[indexPath.row].title
+        let date = ViewController.noteList[indexPath.row].date.description(with: .current)
+        cell.dateLabel.text = date
         return cell
     }
 }
@@ -76,6 +77,9 @@ extension ViewController: UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let vc = NoteViewController(stack: coreDataStack)
+        vc.note = coreDataStack.fetchTasks()[indexPath.row]
+        navigationController?.pushViewController(vc, animated: true)
         
     }
     
@@ -91,6 +95,8 @@ extension ViewController: UITableViewDelegate {
 
 private extension ViewController {
     func setupViews() {
+        title = "Notes"
+        navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = .systemBackground
         view.addSubview(tableView)
         let constraints = [
