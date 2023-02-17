@@ -9,16 +9,57 @@ import UIKit
 
 class NoteViewController: UIViewController {
     
+    //MARK: properties
+    
     var note: Note?
+    
+    private let textAppearenceControll = TextAppearenceControll()
     
     private var image: UIImage?
     
     private let coreDataStack: CoreDataStack
     
+    //MARK: buttons and views
+    
+    private let boldButton: UIButton = {
+        let button = UIButton()
+        button.toAutoLayout()
+        button.setImage(UIImage(systemName: "bold"), for: .normal)
+        return button
+    }()
+    
+    private let italicButton: UIButton = {
+        let button = UIButton()
+        button.toAutoLayout()
+        button.setImage(UIImage(systemName: "italic"), for: .normal)
+        return button
+    }()
+    
+    private let underlineButton: UIButton = {
+        let button = UIButton()
+        button.toAutoLayout()
+        button.setImage(UIImage(systemName: "underline"), for: .normal)
+        return button
+    }()
+    
+    private let colorButton: UIButton = {
+        let button = UIButton()
+        button.toAutoLayout()
+        button.setImage(UIImage(systemName: "paintbrush"), for: .normal)
+        return button
+    }()
     private let attachmentButton: UIButton = {
         let button = UIButton()
         button.toAutoLayout()
         button.setImage(UIImage(named: "photo"), for: .normal)
+        return button
+    }()
+    
+    private let removeButton: UIButton = {
+        let button = UIButton()
+        button.isHidden = true
+        button.toAutoLayout()
+        button.setImage(UIImage(systemName: "trash"), for: .normal)
         return button
     }()
     
@@ -40,6 +81,8 @@ class NoteViewController: UIViewController {
         return textView
     }()
     
+    //MARK: UIMethods
+    
     @objc private func saveButtonPressed() {
         print("save button pressed")
         let imageData = image?.pngData()
@@ -57,7 +100,7 @@ class NoteViewController: UIViewController {
            self.view.endEditing(true)
     }
     
-    @objc func handleTapOnAttachment() {
+    @objc private func handleTapOnAttachment() {
         let cameraImage = UIImage(named: "camera")
         let photoLibImage = UIImage(named: "photo")
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
@@ -78,6 +121,7 @@ class NoteViewController: UIViewController {
         present(actionSheet, animated: true)
     }
     
+    
     private func setupTextViews() {
         guard let note = note else { return }
         titleTextView.text = note.title
@@ -85,15 +129,13 @@ class NoteViewController: UIViewController {
         contentTextView.textColor = .label
         titleTextView.textColor = .label
         
-        // problems may occure 
         guard let imageData = note.image else { return }
         image = UIImage(data: imageData)
         guard let image = image else { return }
-        workingWithImage(image: image)
+        appendImage(image: image)
     }
     
-    private func workingWithImage(image: UIImage) {
-        print(" workingWithImage called")
+    private func appendImage(image: UIImage) {
         var attributedString :NSMutableAttributedString!
         attributedString = NSMutableAttributedString(attributedString: contentTextView.attributedText)
         let textAttachment = NSTextAttachment()
@@ -103,9 +145,20 @@ class NoteViewController: UIViewController {
         textAttachment.image = UIImage(cgImage: textAttachment.image!.cgImage!, scale: scaleFactor, orientation: .up)
         let attrStringWithImage = NSAttributedString(attachment: textAttachment)
         attributedString.append(attrStringWithImage)
-        contentTextView.attributedText = attributedString;
+        contentTextView.attributedText = attributedString
+        attachmentButton.isHidden = true
+        removeButton.isHidden = false
     }
     
+    @objc private func removeImage() {
+        image = nil
+        contentTextView.text = note?.desc
+        attachmentButton.isHidden = false
+        removeButton.isHidden = true
+        
+    }
+    
+    //MARK: life cycle
     init(stack: CoreDataStack) {
         self.coreDataStack = stack
         super.init(nibName: nil, bundle: nil)
@@ -118,13 +171,30 @@ class NoteViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()
-        setupTextViews()
+        DispatchQueue.main.async {
+            self.setupTextViews()
+        }
     }
     
+    //MARK: editing text methods
     
-}
+    @objc private func boldText() {
+        textAppearenceControll.btnTapp()
+    }
+    
+    @objc private func italicText() {
+        textAppearenceControll.italicTapp()
+    }
+    
+    @objc private func undelinedText() {
+        textAppearenceControll.underlineTapp()
+    }
+    
+    @objc private func coloredText() {
+        textAppearenceControll.colourTapp()
+    }
 
-    
+}
 
 //MARK: EXTENSIONS
 
@@ -132,11 +202,23 @@ private extension NoteViewController {
     func setupViews() {
         titleTextView.delegate = self
         contentTextView.delegate = self
+        
         titleTextView.addDoneButton(title: "Done", target: self, selector: #selector(tapDone(sender:)))
         contentTextView.addDoneButton(title: "Done", target: self, selector: #selector(tapDone(sender:)))
+        
         attachmentButton.addTarget(self, action: #selector(handleTapOnAttachment), for: .touchUpInside)
+        removeButton.addTarget(self, action: #selector(removeImage), for: .touchUpInside)
+        
+        
+        textAppearenceControll.textView = contentTextView
+        boldButton.addTarget(self, action: #selector(boldText), for: .touchUpInside)
+        italicButton.addTarget(self, action: #selector(italicText), for: .touchUpInside)
+        underlineButton.addTarget(self, action: #selector(undelinedText), for: .touchUpInside)
+        colorButton.addTarget(self, action: #selector(coloredText), for: .touchUpInside)
+
+        
         view.backgroundColor = .lightGray
-        view.addSubviews(titleTextView, contentTextView, attachmentButton)
+        view.addSubviews(titleTextView, contentTextView, attachmentButton, removeButton, boldButton, italicButton, underlineButton, colorButton)
         let constraints = [
             
             titleTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
@@ -150,7 +232,22 @@ private extension NoteViewController {
             contentTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -60),
             
             attachmentButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
-            attachmentButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15)
+            attachmentButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
+            
+            removeButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
+            removeButton.trailingAnchor.constraint(equalTo: attachmentButton.leadingAnchor, constant: -15),
+            
+            boldButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
+            boldButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
+            
+            italicButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
+            italicButton.leadingAnchor.constraint(equalTo: boldButton.trailingAnchor, constant: 15),
+            
+            underlineButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
+            underlineButton.leadingAnchor.constraint(equalTo: italicButton.trailingAnchor, constant: 15),
+            
+            colorButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
+            colorButton.leadingAnchor.constraint(equalTo: underlineButton.trailingAnchor, constant: 15),
 
 
         ]
@@ -162,7 +259,6 @@ private extension NoteViewController {
         
     }
 }
-
 extension NoteViewController: UITextViewDelegate {
     
     func textViewDidBeginEditing(_ textView: UITextView) {
@@ -202,7 +298,7 @@ extension NoteViewController: UIImagePickerControllerDelegate, UINavigationContr
             dismiss(animated: true)
             return
         }
-        workingWithImage(image: image)
+        appendImage(image: image)
         dismiss(animated: true)
     }
     

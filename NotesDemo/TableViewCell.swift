@@ -26,8 +26,6 @@ class TableViewCell: UITableViewCell {
         return label
     }()
     
-    
-    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupViews()
@@ -43,11 +41,12 @@ class TableViewCell: UITableViewCell {
             titleLabel.topAnchor.constraint(equalTo: self.topAnchor, constant: 5),
             titleLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 5),
             titleLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5),
-            titleLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -50),
+            titleLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -70),
             
-            dateLabel.topAnchor.constraint(equalTo: self.bottomAnchor, constant: -40),
+            dateLabel.topAnchor.constraint(equalTo: self.bottomAnchor, constant: -50),
             dateLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
-            dateLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10)
+            dateLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5),
+            dateLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -5)
 
         ]
         NSLayoutConstraint.activate(constraints)

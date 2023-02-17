@@ -19,6 +19,7 @@
 		63221D2F299E38F8008EEA3D /* Note+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63221D2D299E38F8008EEA3D /* Note+CoreDataClass.swift */; };
 		63221D30299E38F8008EEA3D /* Note+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63221D2E299E38F8008EEA3D /* Note+CoreDataProperties.swift */; };
 		63221D33299E3F5B008EEA3D /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63221D32299E3F5B008EEA3D /* CoreDataStack.swift */; };
+		63FB0AA6299FC05900B3141F /* TextAppearenceControll.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63FB0AA5299FC05900B3141F /* TextAppearenceControll.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		63221D2D299E38F8008EEA3D /* Note+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Note+CoreDataClass.swift"; sourceTree = "<group>"; };
 		63221D2E299E38F8008EEA3D /* Note+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Note+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		63221D32299E3F5B008EEA3D /* CoreDataStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		63FB0AA5299FC05900B3141F /* TextAppearenceControll.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextAppearenceControll.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +76,7 @@
 				63221D14299E3477008EEA3D /* ViewController.swift */,
 				63221D27299E35C2008EEA3D /* TableViewCell.swift */,
 				63221D2B299E35FF008EEA3D /* NoteViewController.swift */,
+				63FB0AA5299FC05900B3141F /* TextAppearenceControll.swift */,
 				63221D29299E35DF008EEA3D /* Common.swift */,
 				63221D1C299E3478008EEA3D /* Assets.xcassets */,
 				63221D1E299E3478008EEA3D /* LaunchScreen.storyboard */,
@@ -168,6 +171,7 @@
 				63221D1B299E3477008EEA3D /* NotesDemo.xcdatamodeld in Sources */,
 				63221D15299E3477008EEA3D /* ViewController.swift in Sources */,
 				63221D11299E3477008EEA3D /* AppDelegate.swift in Sources */,
+				63FB0AA6299FC05900B3141F /* TextAppearenceControll.swift in Sources */,
 				63221D33299E3F5B008EEA3D /* CoreDataStack.swift in Sources */,
 				63221D2F299E38F8008EEA3D /* Note+CoreDataClass.swift in Sources */,
 				63221D2A299E35DF008EEA3D /* Common.swift in Sources */,
