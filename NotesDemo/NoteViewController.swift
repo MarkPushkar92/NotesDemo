@@ -42,11 +42,12 @@ class NoteViewController: UIViewController {
     
     @objc private func saveButtonPressed() {
         print("save button pressed")
+        let imageData = image?.pngData()
         if note == nil {
-            coreDataStack.createNewNote(content: contentTextView.text, title: titleTextView.text)
+            coreDataStack.createNewNote(content: contentTextView.text, title: titleTextView.text, image: imageData)
         } else {
             guard let note = note else { return }
-            coreDataStack.undateExistingObject(note: note, content: contentTextView.text, title: titleTextView.text)
+            coreDataStack.undateExistingObject(note: note, content: contentTextView.text, title: titleTextView.text, image: imageData)
         }
         navigationController?.popToRootViewController(animated: true)
         
@@ -92,6 +93,7 @@ class NoteViewController: UIViewController {
     }
     
     private func workingWithImage(image: UIImage) {
+        print(" workingWithImage called")
         var attributedString :NSMutableAttributedString!
         attributedString = NSMutableAttributedString(attributedString: contentTextView.attributedText)
         let textAttachment = NSTextAttachment()

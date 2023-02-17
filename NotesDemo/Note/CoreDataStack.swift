@@ -58,19 +58,20 @@ class CoreDataStack {
         save(context: viewContext)
     }
     
-    func createNewNote(content: String, title: String) {
+    func createNewNote(content: String, title: String, image: Data?) {
         let context = persistentContainer.viewContext
         let newNote = Note(context: context)
         newNote.desc = content
         newNote.title = title
         newNote.id = UUID()
         newNote.date = Date()
+        newNote.image = image
         save(context: context)
     }
     
-    func undateExistingObject(note: Note, content: String, title: String) {
+    func undateExistingObject(note: Note, content: String, title: String, image: Data?) {
         remove(note: note)
-        createNewNote(content: content, title: title)
+        createNewNote(content: content, title: title, image: image)
     }
     
     private func save(context: NSManagedObjectContext) {
