@@ -21,6 +21,14 @@ class NoteViewController: UIViewController {
     
     //MARK: buttons and views
     
+    private let scrollView: UIScrollView = {
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        return scroll
+    }()
+    
+    private let containerView = UIView()
+    
     private let regularButton: UIButton = {
         let button = UIButton()
         button.toAutoLayout()
@@ -161,13 +169,7 @@ class NoteViewController: UIViewController {
         
     }
     
-    var scrollView: UIScrollView = {
-        let scroll = UIScrollView()
-        scroll.translatesAutoresizingMaskIntoConstraints = false
-        return scroll
-    }()
-    
-    var containerView = UIView()
+   
     
     //MARK: life cycle
     init(stack: CoreDataStack) {
@@ -285,10 +287,7 @@ class NoteViewController: UIViewController {
         textAppearenceControll.regular()
     }
     
-
 }
-
-    
 
 //MARK: EXTENSIONS
 
@@ -342,9 +341,6 @@ extension NoteViewController: UITextViewDelegate {
             textView.textColor = UIColor.lightGray
         }
     }
-    
-   
-
     
 }
 
