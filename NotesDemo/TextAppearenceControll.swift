@@ -62,6 +62,17 @@ class TextAppearenceControll {
         }
     }
     
+    func regular() {
+   
+        if let text = textView {
+            let range = text.selectedRange
+            let string = NSMutableAttributedString(attributedString: textView.attributedText)
+            let regularAttribute = [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 18)]
+            string.addAttributes(regularAttribute, range: textView.selectedRange)
+            textView.attributedText = string
+            textView.selectedRange = range
+        }
+    }
 
 }
  

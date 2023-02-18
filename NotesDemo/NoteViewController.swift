@@ -21,6 +21,13 @@ class NoteViewController: UIViewController {
     
     //MARK: buttons and views
     
+    private let regularButton: UIButton = {
+        let button = UIButton()
+        button.toAutoLayout()
+        button.setImage(UIImage(systemName: "character"), for: .normal)
+        return button
+    }()
+    
     private let boldButton: UIButton = {
         let button = UIButton()
         button.toAutoLayout()
@@ -75,6 +82,7 @@ class NoteViewController: UIViewController {
     private let contentTextView: UITextView = {
         let textView = UITextView()
         textView.text = "Type the text of your note"
+        textView.font = UIFont.systemFont(ofSize: 18)
         textView.textColor = UIColor.lightGray
         textView.toAutoLayout()
         textView.layer.cornerRadius = 10
@@ -85,12 +93,11 @@ class NoteViewController: UIViewController {
     
     @objc private func saveButtonPressed() {
         print("save button pressed")
-        let imageData = image?.pngData()
         if note == nil {
-            coreDataStack.createNewNote(content: contentTextView.text, title: titleTextView.text, image: imageData)
+            coreDataStack.createNewNote(content: contentTextView.attributedText, title: titleTextView.text)
         } else {
             guard let note = note else { return }
-            coreDataStack.undateExistingObject(note: note, content: contentTextView.text, title: titleTextView.text, image: imageData)
+            coreDataStack.undateExistingObject(note: note, content: contentTextView.attributedText, title: titleTextView.text)
         }
         navigationController?.popToRootViewController(animated: true)
         
@@ -125,14 +132,10 @@ class NoteViewController: UIViewController {
     private func setupTextViews() {
         guard let note = note else { return }
         titleTextView.text = note.title
-        contentTextView.text = note.desc
+        contentTextView.attributedText = note.desc
         contentTextView.textColor = .label
         titleTextView.textColor = .label
         
-        guard let imageData = note.image else { return }
-        image = UIImage(data: imageData)
-        guard let image = image else { return }
-        appendImage(image: image)
     }
     
     private func appendImage(image: UIImage) {
@@ -152,7 +155,7 @@ class NoteViewController: UIViewController {
     
     @objc private func removeImage() {
         image = nil
-        contentTextView.text = note?.desc
+        contentTextView.attributedText = note?.desc
         attachmentButton.isHidden = false
         removeButton.isHidden = true
         
@@ -193,6 +196,10 @@ class NoteViewController: UIViewController {
     @objc private func coloredText() {
         textAppearenceControll.colourTapp()
     }
+    
+    @objc private func regularText() {
+        textAppearenceControll.regular()
+    }
 
 }
 
@@ -215,10 +222,11 @@ private extension NoteViewController {
         italicButton.addTarget(self, action: #selector(italicText), for: .touchUpInside)
         underlineButton.addTarget(self, action: #selector(undelinedText), for: .touchUpInside)
         colorButton.addTarget(self, action: #selector(coloredText), for: .touchUpInside)
+        regularButton.addTarget(self, action: #selector(regularText), for: .touchUpInside)
 
         
         view.backgroundColor = .lightGray
-        view.addSubviews(titleTextView, contentTextView, attachmentButton, removeButton, boldButton, italicButton, underlineButton, colorButton)
+        view.addSubviews(titleTextView, contentTextView, attachmentButton, removeButton, boldButton, italicButton, underlineButton, colorButton, regularButton)
         let constraints = [
             
             titleTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
@@ -248,6 +256,9 @@ private extension NoteViewController {
             
             colorButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
             colorButton.leadingAnchor.constraint(equalTo: underlineButton.trailingAnchor, constant: 15),
+
+            regularButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
+            regularButton.leadingAnchor.constraint(equalTo: colorButton.trailingAnchor, constant: 15),
 
 
         ]

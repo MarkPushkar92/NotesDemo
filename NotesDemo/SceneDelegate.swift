@@ -22,6 +22,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navigation = UINavigationController(rootViewController: viewController)
         window?.rootViewController = navigation
         window?.makeKeyAndVisible()
+        
+        if UserDefaults.isFirstLaunch() {
+            coreDataStack.createNewNote(content: NSAttributedString(string: "Welcome to Notes App"), title: "Hello!!!")
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
