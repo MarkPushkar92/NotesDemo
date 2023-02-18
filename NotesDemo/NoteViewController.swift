@@ -104,7 +104,7 @@ class NoteViewController: UIViewController {
     }
     
     @objc private func tapDone(sender: Any) {
-           self.view.endEditing(true)
+        self.view.endEditing(true)
     }
     
     @objc private func handleTapOnAttachment() {
@@ -161,6 +161,14 @@ class NoteViewController: UIViewController {
         
     }
     
+    var scrollView: UIScrollView = {
+        let scroll = UIScrollView()
+        scroll.translatesAutoresizingMaskIntoConstraints = false
+        return scroll
+    }()
+    
+    var containerView = UIView()
+    
     //MARK: life cycle
     init(stack: CoreDataStack) {
         self.coreDataStack = stack
@@ -177,6 +185,82 @@ class NoteViewController: UIViewController {
         DispatchQueue.main.async {
             self.setupTextViews()
         }
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name:UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name:UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+    }
+    
+    @objc fileprivate func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            scrollView.contentInset.bottom = keyboardSize.height
+            scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height, right: 0)
+        }
+    }
+    
+    @objc fileprivate func keyboardWillHide(notification: NSNotification) {
+        scrollView.contentInset.bottom = .zero
+        scrollView.verticalScrollIndicatorInsets = .zero
+    }
+    
+    override func viewDidLayoutSubviews() {
+        let constraints = [
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+    
+            containerView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            containerView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            containerView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            containerView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            titleTextView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            titleTextView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 15),
+            titleTextView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -15),
+            titleTextView.bottomAnchor.constraint(equalTo: containerView.topAnchor, constant: 110),
+            
+            contentTextView.topAnchor.constraint(equalTo: titleTextView.bottomAnchor, constant: 25),
+            contentTextView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 35),
+            contentTextView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -15),
+            contentTextView.heightAnchor.constraint(equalToConstant: 300),
+            contentTextView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -60),
+            
+            attachmentButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
+            attachmentButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -15),
+            
+            removeButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
+            removeButton.trailingAnchor.constraint(equalTo: attachmentButton.leadingAnchor, constant: -15),
+            
+            boldButton.topAnchor.constraint(equalTo: contentTextView.topAnchor, constant: 70),
+            boldButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5),
+            
+            italicButton.topAnchor.constraint(equalTo: boldButton.bottomAnchor, constant: 10),
+            italicButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5),
+            
+            underlineButton.topAnchor.constraint(equalTo: italicButton.bottomAnchor, constant: 10),
+            underlineButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5),
+            
+            colorButton.topAnchor.constraint(equalTo: underlineButton.bottomAnchor, constant: 10),
+            colorButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5),
+            
+            regularButton.topAnchor.constraint(equalTo: colorButton.bottomAnchor, constant: 10),
+            regularButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 5),
+        ]
+        NSLayoutConstraint.activate(constraints)
     }
     
     //MARK: editing text methods
@@ -200,12 +284,16 @@ class NoteViewController: UIViewController {
     @objc private func regularText() {
         textAppearenceControll.regular()
     }
+    
 
 }
+
+    
 
 //MARK: EXTENSIONS
 
 private extension NoteViewController {
+    
     func setupViews() {
         titleTextView.delegate = self
         contentTextView.delegate = self
@@ -216,7 +304,6 @@ private extension NoteViewController {
         attachmentButton.addTarget(self, action: #selector(handleTapOnAttachment), for: .touchUpInside)
         removeButton.addTarget(self, action: #selector(removeImage), for: .touchUpInside)
         
-        
         textAppearenceControll.textView = contentTextView
         boldButton.addTarget(self, action: #selector(boldText), for: .touchUpInside)
         italicButton.addTarget(self, action: #selector(italicText), for: .touchUpInside)
@@ -225,48 +312,18 @@ private extension NoteViewController {
         regularButton.addTarget(self, action: #selector(regularText), for: .touchUpInside)
 
         
+        
+        view.addSubview(scrollView)
+        scrollView.addSubview(containerView)
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        
         view.backgroundColor = .lightGray
-        view.addSubviews(titleTextView, contentTextView, attachmentButton, removeButton, boldButton, italicButton, underlineButton, colorButton, regularButton)
-        let constraints = [
-            
-            titleTextView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 10),
-            titleTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
-            titleTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
-            titleTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 110),
-            
-            contentTextView.topAnchor.constraint(equalTo: titleTextView.bottomAnchor, constant: 25),
-            contentTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
-            contentTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
-            contentTextView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -60),
-            
-            attachmentButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
-            attachmentButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -15),
-            
-            removeButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
-            removeButton.trailingAnchor.constraint(equalTo: attachmentButton.leadingAnchor, constant: -15),
-            
-            boldButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
-            boldButton.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 15),
-            
-            italicButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
-            italicButton.leadingAnchor.constraint(equalTo: boldButton.trailingAnchor, constant: 15),
-            
-            underlineButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
-            underlineButton.leadingAnchor.constraint(equalTo: italicButton.trailingAnchor, constant: 15),
-            
-            colorButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
-            colorButton.leadingAnchor.constraint(equalTo: underlineButton.trailingAnchor, constant: 15),
-
-            regularButton.topAnchor.constraint(equalTo: contentTextView.bottomAnchor, constant: 10),
-            regularButton.leadingAnchor.constraint(equalTo: colorButton.trailingAnchor, constant: 15),
-
-
-        ]
-        NSLayoutConstraint.activate(constraints)
+        containerView.addSubviews(titleTextView, contentTextView, attachmentButton, removeButton, boldButton, italicButton, underlineButton, colorButton, regularButton)
         
         let saveButton  = UIBarButtonItem(title: "Save", style: .plain, target: self, action: #selector(saveButtonPressed))
         
         navigationItem.rightBarButtonItem = saveButton
+        
         
     }
 }
@@ -286,6 +343,8 @@ extension NoteViewController: UITextViewDelegate {
         }
     }
     
+   
+
     
 }
 
@@ -315,3 +374,4 @@ extension NoteViewController: UIImagePickerControllerDelegate, UINavigationContr
     
     
 }
+
